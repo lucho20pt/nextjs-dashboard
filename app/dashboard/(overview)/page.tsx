@@ -1,13 +1,15 @@
 import { lusitana } from '@/app/ui/fonts';
-import { fetchLatestInvoices, fetchCardData } from '../../lib/data';
+import { fetchCardData } from '../../lib/data';
 import RevenueChart from '../../ui/dashboard/revenue-chart';
 import LatestInvoices from '../../ui/dashboard/latest-invoices';
 import { Card } from '../../ui/dashboard/cards';
 import { Suspense } from 'react';
-import { RevenueChartSkeleton } from '@/app/ui/skeletons';
+import {
+  RevenueChartSkeleton,
+  LatestInvoicesSkeleton,
+} from '@/app/ui/skeletons';
 
 const Dashboard = async () => {
-  const latestInvoices = await fetchLatestInvoices();
   const {
     totalPaidInvoices,
     totalPendingInvoices,
@@ -34,7 +36,9 @@ const Dashboard = async () => {
         <Suspense fallback={<RevenueChartSkeleton />}>
           <RevenueChart />
         </Suspense>
-        <LatestInvoices latestInvoices={latestInvoices} />
+        <Suspense fallback={<LatestInvoicesSkeleton />}>
+          <LatestInvoices />
+        </Suspense>
       </div>
     </main>
   );
