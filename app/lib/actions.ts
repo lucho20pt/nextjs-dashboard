@@ -64,14 +64,27 @@ export async function createInvoice(prevState: State, formData: FormData) {
   redirect('/dashboard/invoices');
 }
 
-export async function updateInvoice(id: string, formData: FormData) {
-  // console.log('updateInvoice');
-  const { customerId, amount, status } = UpdateInvoice.parse({
+export async function updateInvoice(
+  id: string,
+  prevState: State,
+  formData: FormData,
+) {
+  // Validate form using Zod
+  const validateFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
     status: formData.get('status'),
   });
 
+  if (!validateFields.success) {
+    return {
+      errors: validateFields.error.flatten().fieldErrors,
+      mesage: 'Missing Fields. Failed to Edit Invoice',
+    };
+  }
+
+  // Prepare data for insertion into the database
+  const { customerId, amount, status } = validateFields.data;
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
 
